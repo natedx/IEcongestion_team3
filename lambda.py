@@ -34,22 +34,35 @@ salaire_par_heures=salaire_chauffeur/heures_mois
 entretien=1500          #€/mois
 prix_gazole=1.4         #€/L
 
+duree_amortissement=15*12 #mois
 
-
+duree_fonctionnement_normal=18       #h/jour
+duree_fonctionnement_rush=5        #h/jour
+duree_fonctionnement_moyen=10
+#======= Fonctions =======
 
 def cout_mois_capa(prix, conso, capacite, vitesse, auto, n_heures, n_mois):
-    '''rertourne le prix sur n_mois, pour un bus qui tourne n_heures par jour '''
+    '''rertourne le prix sur n_mois, pour un bus qui tourne n_heures par jour compensé '''
     coef=capacite*vitesse*n_heures
     if not auto:
         salaire=salaire_par_heures*n_heures*30
     else:
         salaire=0
     petrole=prix_gazole*vitesse*n_heures/100*conso
-    #print((salaire + petrole + entretien)/coef)
     return (prix/n_mois + salaire + petrole + entretien)/coef
 
-def full_bus(budjet_max, flux, temps_arret):
+def cout_unitaire_mois(prix, conso, vitesse, auto, n_heures, n_mois):
+    '''rertourne le prix sur n_mois, pour un bus qui tourne n_heures par jour '''
+    if not auto:
+        salaire = salaire_par_heures * n_heures * 30
+    else:
+        salaire = 0
+    petrole = prix_gazole * vitesse * n_heures / 100 * conso
+    return (prix / n_mois + salaire + petrole + entretien)
 
+def full_bus(budjet_max, flux, temps_arret):
+    nmax=budjet_max/cout_unitaire_mois(prix_bus, conso_bus, v_bus, False, duree_fonctionnement_moyen, duree_amortissement)
+    return nmax
 
 
 
