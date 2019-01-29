@@ -1,30 +1,41 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+#======= Constantes =======
+
+    #=== Bus ===
+
+capacite_bus=90         #personnes
 prix_bus=200000         #€
-prix_articule=300000    #€
-prix_bus_auto=400000   #€
-
 conso_bus=25            #L/100km
-conso_articule=35       #L/100km
-conso_bus_auto=20       #L/100km
-
-prix_gazole=1.4         #€/L
-
 v_bus=40                #km/h
+
+    #=== Bus articule ===
+
+capacite_articule=150   #personnes
+prix_articule=300000    #€
+conso_articule=35       #L/100km
 v_articule=35           #km/h
+
+    #=== Bus auto ===
+
+capacite_bus_auto=80    #personnes
+prix_bus_auto=400000    #€
+conso_bus_auto=20       #L/100km
 v_bus_auto=20           #km/h
+
+    #=== General===
 
 salaire_chauffeur=4000  #€/mois
 heures_mois=35*4.5
+salaire_par_heures=salaire_chauffeur/heures_mois
 
 entretien=1500          #€/mois
+prix_gazole=1.4         #€/L
 
-capacite_bus=90         #personnes
-capacite_articule=150   #personnes
-capacite_bus_auto=80    #personnes
 
-salaire_par_heures=salaire_chauffeur/heures_mois
+
 
 def cout_mois_capa(prix, conso, capacite, vitesse, auto, n_heures, n_mois):
     '''rertourne le prix sur n_mois, pour un bus qui tourne n_heures par jour '''
@@ -36,6 +47,11 @@ def cout_mois_capa(prix, conso, capacite, vitesse, auto, n_heures, n_mois):
     petrole=prix_gazole*vitesse*n_heures/100*conso
     #print((salaire + petrole + entretien)/coef)
     return (prix/n_mois + salaire + petrole + entretien)/coef
+
+def full_bus(budjet_max, flux, temps_arret):
+
+
+
 
 h1=18       #h/jour
 h2=5        #h/jour
