@@ -101,14 +101,14 @@ def plot_comparison():
     import numpy as np
 
     t=np.array([x for x in range(5*12,20*12)])
-    trucs_a_plot={'normal_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus,entretien_bus, capacite_bus, duree_fonctionnement_normal, t),
-                  'rush_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus,entretien_bus, capacite_bus, duree_fonctionnement_rush, t),
+    trucs_a_plot={'normal_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus ,entretien_bus, capacite_bus, duree_fonctionnement_normal, t),
+                  'rush_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus, entretien_bus, capacite_bus, duree_fonctionnement_rush, t),
                   'normal_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_normal, t),
                   'rush_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_rush, t),
-                  'normal_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t),
-                  'rush_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_rush, t),
-                  'normal_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t),
-                  'rush_taxi' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_rush, t)}
+                  'normal_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t, auto=True),
+                  'rush_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_rush, t, auto=True),
+                  'normal_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi+prix_batterie_mois, capacite_taxi, duree_fonctionnement_normal, t, auto=True, electrique=True),
+                  'rush_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi+prix_batterie_mois, capacite_taxi, duree_fonctionnement_rush, t, auto=True, electrique=True)}
 
     for truc in trucs_a_plot:
         plt.plot(t,trucs_a_plot[truc])
