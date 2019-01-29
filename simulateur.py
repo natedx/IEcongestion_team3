@@ -1,6 +1,8 @@
 #Tentative de simulation de l'acheminement de passagers
 
 import numpy as np
+import math
+from random import randint
 
 
 def flux_test (t):
@@ -18,9 +20,27 @@ def non_nul(table):
         i -= 1
     return i
 
+def init(nb_bus, d_simul, t_trajet):
+    init = [0 for i in range(d_simul)]
+    intervalle = math.floor(2*t_trajet*1./nb_bus)
+    i = intervalle
+    init[0] = 1
+    while i < 2*t_trajet:
+        init[i] = 1
+        i += intervalle
+    return init
+
+def retard():
+    def f(n):
+        if n<0:
+            return math.exp(n+math.log(2))-2
+        else:
+            return n
+    return int(f(np.random.normal(1,2)))
+
     
     
-def simul(init,cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
+def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
     """
     Cette fonction permet de calculer les tables d'évolution des passagers en attente
     et les tables de disponibilité des bus.
@@ -39,17 +59,16 @@ def simul(init,cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
     #Calcul du temps de trajet:
     t_trj = int(longueur/(vitesse/60)+nb_arret*t_arret)
     
+    nb_bus = 6    
+    
+    
+    
     attentes = [0 for i in range(d_simul)]
     moyenne = []
     
     #Initialisation des tables d'évolution
     table_p = np.zeros((1,d_simul))[0]
-    table_v = np.zeros((1,d_simul))[0]
-
-    
-    #Initialisation des véhicules:
-    for (i, nb) in init:
-        table_v[i] = nb
+    table_v = init(nb_bus, d_simul, t_trj)
     
     #Evolution du système
     for i in range(0,d_simul-1):
@@ -86,11 +105,13 @@ def simul(init,cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
             table_p[i+1] = max(table_p[i]-capa, 0)
             #Il y aura donc un nouveau bus à i+2*t_trj
             if i+2*t_trj < d_simul:
-                table_v[i+2*t_trj] += 1
+                table_v[i+2*t_trj+retard()] += 1
                 
         #S'il n'y a pas de bus, les passagers sont encore là à i+1
         else:
             table_p[i+1] += table_p[i]
+    # for i in range(len(attentes)):
+    #     moyenne.extend([i]*attentes[i])
     
     return table_p, table_v, moyenne
     
@@ -100,16 +121,15 @@ def simul(init,cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
     
 
 def test():
-    init = [(0,1), (5,1), (10,1)]
     flux = flux_test
     longueur = 10 #longueur du trajet en km
     vitesse = 50 #vitesse du véhicule en km/h
     nb_arret = 12 #nombres d'arrêts de la ligne
     t_arret = 1 #temps passé par le véhicule à chaque arrêt en h
-    capa = 60
+    capa = 30
     d_simul = 120
     cout = 0
-    table_v, table_p,moyenne = simul(init,cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul)
+    table_v, table_p,moyenne = simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul)
     print(table_v,table_p,moyenne, np.average(moyenne), sep ='\n')
     
 
