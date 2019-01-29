@@ -3,6 +3,8 @@
 import numpy as np
 import math
 from random import randint
+from budgets import *
+
 
 
 def flux_test (t):
@@ -22,6 +24,8 @@ def non_nul(table):
 
 def init(nb_bus, d_simul, t_trajet):
     init = [0 for i in range(d_simul)]
+    if nb_bus == 0:
+        return init
     intervalle = math.floor(2*t_trajet*1./nb_bus)
     i = intervalle
     init[0] = 1
@@ -40,7 +44,7 @@ def retard():
 
     
     
-def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
+def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule):
     """
     Cette fonction permet de calculer les tables d'évolution des passagers en attente
     et les tables de disponibilité des bus.
@@ -53,14 +57,17 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
     vitesse     --  vitesse moyenne du véhicule en km/h
     nb_arret    --  nombre d'arrêts sur la ligne
     t_arret     --  temps moyen passé à un arrêt en min
-    capa        --  capacité d'un véhicule
     d_simul     --  durée de la simulation en min
+    vehicule    --  type de véhicule {1:full_bus,2:full_articule,3:full_bus_auto,4:full_taxi}
     """
+    dict = {1:full_bus,2:full_articule,3:full_bus_auto,4:full_taxi}
+    capa = {1:capacite_bus,2:capacite_articule,3:capacite_bus_auto,4:capacite_taxi}
+    
     #Calcul du temps de trajet:
     t_trj = int(longueur/(vitesse/60)+nb_arret*t_arret)
     
-    nb_bus = 6    
     
+    nb_bus = dict[vehicule](cout)
     
     
     attentes = [0 for i in range(d_simul)]
@@ -78,7 +85,7 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
         attentes[0] = flux(i)
         nb_bus_i = table_v[i]
         if nb_bus_i != 0:
-            nb_personnes_montant = int(nb_bus_i*capa)
+            nb_personnes_montant = int(nb_bus_i*capa[vehicule])
             maxi = non_nul(attentes)
             while nb_personnes_montant > 0 and maxi >= 0:
                 if attentes[maxi] >= nb_personnes_montant:
@@ -102,7 +109,7 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul):
             #On suppose qu'au plus un bus part par minute
             table_v[i+1] += table_v[i]-1
             #On charge un maximum de passagers
-            table_p[i+1] = max(table_p[i]-capa, 0)
+            table_p[i+1] = max(table_p[i]-capa[vehicule], 0)
             #Il y aura donc un nouveau bus à i+2*t_trj
             if i+2*t_trj < d_simul:
                 table_v[i+2*t_trj+retard()] += 1
@@ -126,15 +133,11 @@ def test():
     vitesse = 50 #vitesse du véhicule en km/h
     nb_arret = 12 #nombres d'arrêts de la ligne
     t_arret = 1 #temps passé par le véhicule à chaque arrêt en h
-    capa = 30
     d_simul = 120
-    cout = 0
-    table_v, table_p,moyenne = simul(cout,flux,longueur,vitesse,nb_arret,t_arret,capa,d_simul)
+    cout = 40000
+    table_v, table_p,moyenne = simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,1)
     print(table_v,table_p,moyenne, np.average(moyenne), sep ='\n')
     
-
-
-
 
 
 
