@@ -60,10 +60,24 @@ def cout_unitaire_mois(prix, conso, vitesse, auto, n_heures, n_mois):
     petrole = prix_gazole * vitesse * n_heures / 100 * conso
     return (prix / n_mois + salaire + petrole + entretien)
 
-def full_bus(budjet_max, flux, temps_arret):
-    nmax=budjet_max/cout_unitaire_mois(prix_bus, conso_bus, v_bus, False, duree_fonctionnement_moyen, duree_amortissement)
-    return nmax
 
+def full_bus(budjet_max):
+    nmax=budjet_max/cout_unitaire_mois(prix_bus, conso_bus, v_bus, False, duree_fonctionnement_moyen, duree_amortissement)
+    if nmax%1==0:
+        return int(nmax)
+    return int(nmax)+1
+
+def full_articule(budjet_max):
+    nmax=budjet_max/cout_unitaire_mois(prix_articule, conso_articule, v_articule, False, duree_fonctionnement_moyen, duree_amortissement)
+    if nmax%1==0:
+        return int(nmax)
+    return int(nmax)+1
+
+def full_bus_auto(budjet_max):
+    nmax=budjet_max/cout_unitaire_mois(prix_bus_auto, conso_bus_auto, v_bus_auto, False, duree_fonctionnement_moyen, duree_amortissement)
+    if nmax%1==0:
+        return int(nmax)
+    return int(nmax)+1
 
 
 h1=18       #h/jour
