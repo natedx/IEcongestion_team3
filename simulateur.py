@@ -174,7 +174,6 @@ def simul(cout, flux, d_simul, vehicule, ligne):
 
 def test():
     flux = flux_test
-    t_arret = 1  # temps passé par le véhicule à chaque arrêt en h
     d_simul = 120
     cout = 100000
     table_p, table_v, moyenne, nb_bus, remplissage = simul(
