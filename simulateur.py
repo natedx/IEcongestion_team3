@@ -85,7 +85,7 @@ def average( t):
     return somme*1./ponderation
 
 
-def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, ligne):
+def simul(cout, flux, d_simul, vehicule, ligne):
     """
     Cette fonction permet de calculer les tables d'évolution des passagers en attente
     et les tables de disponibilité des bus.
@@ -103,11 +103,13 @@ def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, l
     dict = {1: full_bus, 2: full_articule, 3: full_bus_auto, 4: full_taxi}
     capa = {1: capacite_bus, 2: capacite_articule,
             3: capacite_bus_auto, 4: capacite_taxi}
+    vitesse = {1:v_bus, 2:v_articule, 3:v_bus_auto, 4:v_taxi}
+    
 
     # Calcul du temps de trajet:
-    t_trj = int(longueur/(vitesse/60)+nb_arret*t_arret)
+    t_trj = int(ligne["longueur"]/(vitesse[vehicule]/60))
 
-    nb_bus = dict[vehicule](cout)
+    nb_bus = dict[vehicule](cout) #Calcul du nombre de bus avec les fonctions de budgets.
 
     attentes = [0 for i in range(d_simul)]
     moyenne = []
@@ -172,12 +174,9 @@ def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, l
 
 def test():
     flux = flux_test
-    longueur = 10  # longueur du trajet en km
-    vitesse = 50  # vitesse du véhicule en km/h
-    nb_arret = 12  # nombres d'arrêts de la ligne
     t_arret = 1  # temps passé par le véhicule à chaque arrêt en h
     d_simul = 120
     cout = 100000
-    table_v, table_p, moyenne, nb_bus, remplissage = simul(
-        cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, 1, ligne9106)
-    print("table des véhicules : ", table_v, "table des passagers : ", table_p, "table des temps d'attente : ", moyenne, "temps d'attente moyen : ", np.average(moyenne), "nombre de bus : " nb_bus, "table des remplissages : ", remplissage sep='\n')
+    table_p, table_v, moyenne, nb_bus, remplissage = simul(
+        cout, flux, d_simul, 1, ligne9106)
+    print("table des véhicules : ", table_v, "table des passagers : ", table_p, "table des temps d'attente : ", moyenne, "temps d'attente moyen : ", np.average(moyenne), "nombre de bus : ", nb_bus, "table des remplissages : ", remplissage, sep='\n')
