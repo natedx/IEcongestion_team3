@@ -4,7 +4,7 @@
 
 capacite_bus=90         #personnes
 prix_bus=250000         #€
-conso_bus=25            #L/100km
+conso_bus=35            #L/100km
 v_bus=40                #km/h
 entretien_bus=1500          #€/mois
 
@@ -12,7 +12,7 @@ entretien_bus=1500          #€/mois
 
 capacite_articule=150   #personnes
 prix_articule=280000    #€
-conso_articule=35       #L/100km
+conso_articule=50       #L/100km
 v_articule=35           #km/h
 entretien_articule=1500          #€/mois
 
