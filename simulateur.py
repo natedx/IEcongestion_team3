@@ -5,6 +5,19 @@ import math
 from random import randint
 from budgets import *
 
+nb_arrets_91_06 = 10
+nb_arrets_9 = 5
+longeur9 = 3.3 #km
+
+ligne9106 ={
+            "nb_arret" :10 ,
+            "longueur" : 11
+            }
+
+ligne9 = {
+            "nb_arret" :5,
+            "longeur" : 3.3
+            }
 
 
 def flux_test (t):
@@ -34,24 +47,37 @@ def init(nb_bus, d_simul, t_trajet):
         i += intervalle
     return init
 
-def retard():
+attente_normal = 15
+
+def t_arret():
+    """Retourne une valeur aléatoire du temps d'arrêt en secondes"""
     def f(n):
         if n<0:
-            return math.exp(n+math.log(2))-2
+            return 0
         else:
             return n
-    return int(f(np.random.normal(1,2)))
+    return int(f(np.random.normal(attente_normal,attente_normal)))
 
+def retard(ligne):
+    """
+    Retourne une valeur aléatoire du retard en minutes et une table des temps d'arrêt
+    pour chacun des arrêts.
+    """
+    n = ligne["longueur"]
+    table = np.zeros((1,n))[0]
+    for i in range(n):
+        table[i] = t_arret()
+    normal= n*attente_normal #en secondes
+    retard= int((normal - np.sum(table))/60) 
+    return retard, table
     
     
-def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule):
+def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule,ligne):
     """
     Cette fonction permet de calculer les tables d'évolution des passagers en attente
     et les tables de disponibilité des bus.
     Variables:
-    init        --  initialisation des position des bus sous forme de liste de liste
-                    exemple: init = [(0,1), (5,1), (10,1)]
-    cout        --  cout
+    cout        --  budget maximum par mois
     flux        --  flux d'arrivé des passagers
     longueur    --  longueur du trajet en km
     vitesse     --  vitesse moyenne du véhicule en km/h
@@ -59,6 +85,7 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule):
     t_arret     --  temps moyen passé à un arrêt en min
     d_simul     --  durée de la simulation en min
     vehicule    --  type de véhicule {1:full_bus,2:full_articule,3:full_bus_auto,4:full_taxi}
+    ligne       --  [ligne9106, ligne9]
     """
     dict = {1:full_bus,2:full_articule,3:full_bus_auto,4:full_taxi}
     capa = {1:capacite_bus,2:capacite_articule,3:capacite_bus_auto,4:capacite_taxi}
@@ -111,8 +138,10 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule):
             #On charge un maximum de passagers
             table_p[i+1] = max(table_p[i]-capa[vehicule], 0)
             #Il y aura donc un nouveau bus à i+2*t_trj
-            if i+2*t_trj < d_simul:
-                table_v[i+2*t_trj+retard()] += 1
+            r = retard(ligne)[0]
+            next = i+2*t_trj+r
+            if next< d_simul and next >= 0 :
+                table_v[i+2*t_trj+r] += 1
                 
         #S'il n'y a pas de bus, les passagers sont encore là à i+1
         else:
@@ -120,7 +149,7 @@ def simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,vehicule):
     # for i in range(len(attentes)):
     #     moyenne.extend([i]*attentes[i])
     
-    return table_p, table_v, moyenne
+    return table_p, table_v, moyenne, nb_bus
     
     
     
@@ -134,9 +163,9 @@ def test():
     nb_arret = 12 #nombres d'arrêts de la ligne
     t_arret = 1 #temps passé par le véhicule à chaque arrêt en h
     d_simul = 120
-    cout = 40000
-    table_v, table_p,moyenne = simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,1)
-    print(table_v,table_p,moyenne, np.average(moyenne), sep ='\n')
+    cout = 100000
+    table_v, table_p,moyenne,nb_bus = simul(cout,flux,longueur,vitesse,nb_arret,t_arret,d_simul,1,ligne9106)
+    print(table_v,table_p,moyenne, np.average(moyenne),nb_bus, sep ='\n')
     
 
 
