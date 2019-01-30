@@ -122,7 +122,7 @@ def plot_comparison(normal=True, rush=True):
     import matplotlib.pyplot as plt
     import numpy as np
 
-    t=np.array([x for x in range(5*12,20*12)])
+    t=np.array([x for x in range(2*12,15*12)])
     trucs_a_plot_normal={'normal_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus ,entretien_bus, capacite_bus, duree_fonctionnement_normal, t),
                         'normal_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_normal, t),
                         'normal_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t, auto=True),
