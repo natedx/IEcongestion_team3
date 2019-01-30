@@ -74,7 +74,15 @@ def retard(ligne):
         table[i] = t_arret()
     normal = n*attente_normal  # en secondes
     retard = int((normal - np.sum(table))/60)
-    return retard, table
+    return retard
+
+def average( t):
+    somme = 0
+    ponderation = 0
+    for [n, m] in t:
+        somme += n*m
+        ponderation += n
+    return somme*1./ponderation
 
 
 def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, ligne):
@@ -117,26 +125,25 @@ def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, l
         attentes[0] = flux(i)
         nb_bus_i = table_v[i]
         if nb_bus_i != 0:
-            nb_personnes_montant = int(nb_bus_i*capa[vehicule])
+            nb_personnes_montant = capa[vehicule]
             maxi = non_nul(attentes)
             nb_personnes_dans_bus = 0
             while nb_personnes_montant > 0 and maxi >= 0:
                 if attentes[maxi] >= nb_personnes_montant:
                     attentes[maxi] += -(nb_personnes_montant)
                     nb_personnes_dans_bus += nb_personnes_montant
-                    for k in range(nb_personnes_montant):
-                        moyenne += [maxi]
-                        nb_personnes_montant = 0
-                        break
+                    nb_personnes_montant = 0
+
+                    moyenne.append([nb_personnes_montant,maxi])
+                    break
                 if attentes[maxi] < nb_personnes_montant:
-                    for k in range(attentes[maxi]):
-                        moyenne += [maxi]
+                    moyenne.append([attentes[maxi],maxi])
                     nb_personnes_montant = nb_personnes_montant - \
                         attentes[maxi]
                     nb_personnes_dans_bus += attentes[maxi]
                     attentes[maxi] = 0
                     maxi = maxi-1
-            taux = nb_personnes_dans_bus*1./nb_personnes_montant
+            taux = nb_personnes_dans_bus*1./capa[vehicule]
             remplissage.append([i, taux])
 
         # On met à jour le nombre de passagers à la minute i
@@ -149,7 +156,7 @@ def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, l
             # On charge un maximum de passagers
             table_p[i+1] = max(table_p[i]-capa[vehicule], 0)
             # Il y aura donc un nouveau bus à i+2*t_trj
-            r = retard(ligne)[0]
+            r = retard(ligne)
             next = i+2*t_trj+r
             if next < d_simul and next >= 0:
                 table_v[i+2*t_trj+r] += 1
@@ -160,8 +167,8 @@ def simul(cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, vehicule, l
     # for i in range(len(attentes)):
     #     moyenne.extend([i]*attentes[i])
 
-    return table_p, table_v, moyenne, nb_bus
-
+    return table_p, table_v, moyenne, nb_bus, remplissage
+# 
 
 def test():
     flux = flux_test
@@ -173,4 +180,4 @@ def test():
     cout = 100000
     table_v, table_p, moyenne, nb_bus, remplissage = simul(
         cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, 1, ligne9106)
-    print(table_v, table_p, moyenne, np.average(moyenne), nb_bus, remplissage sep='\n')
+    print(table_v, table_p, moyenne, average(moyenne), nb_bus, remplissage, sep='\n')
