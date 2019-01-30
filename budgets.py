@@ -78,6 +78,28 @@ def cout_unitaire_mois(prix, conso, vitesse, entretien, n_heures, n_mois, auto=F
         consomation=prix_kWh*vitesse*n_heures*conso/100
     return (prix / n_mois + salaire + consomation + entretien)
 
+def cout_fonctionnement_mois(type):
+    '''retourne les frais de fonctionements pour un moi par bus'''
+
+    salaire=salaire = salaire_par_heures * duree_fonctionnement_normal * 30
+
+    if type=='taxi':
+        consomation=prix_kWh*v_taxi*duree_fonctionnement_normal*conso_taxi/100
+        return consomation+entretien_taxi+prix_batterie_mois
+
+    elif type=='bus':
+        consomation = prix_gazole * v_bus * duree_fonctionnement_normal / 100 * conso_bus
+        return salaire+consomation+entretien_bus
+
+    elif type=='bus_auto':
+        consomation = prix_gazole * v_bus_auto * duree_fonctionnement_normal / 100 * conso_bus_auto
+        return consomation + entretien_bus_auto
+
+    elif type=='bus_articule':
+        consomation = prix_gazole * v_articule * duree_fonctionnement_normal / 100 * conso_articule
+        return salaire + consomation + entretien_articule
+
+
 
 def full_bus(budjet_max):
     nmax=budjet_max/cout_unitaire_mois(prix_bus, conso_bus, v_bus,entretien_bus, duree_fonctionnement_moyen, duree_amortissement)
@@ -96,22 +118,30 @@ def full_taxi(budjet_max):
 
     return int(nmax)
 
-def plot_comparison():
+def plot_comparison(normal=True, rush=True):
     import matplotlib.pyplot as plt
     import numpy as np
 
     t=np.array([x for x in range(5*12,20*12)])
-    trucs_a_plot={'normal_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus ,entretien_bus, capacite_bus, duree_fonctionnement_normal, t),
-                  'rush_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus, entretien_bus, capacite_bus, duree_fonctionnement_rush, t),
-                  'normal_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_normal, t),
-                  'rush_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_rush, t),
-                  'normal_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t, auto=True),
-                  'rush_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_rush, t, auto=True),
-                  'normal_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi+prix_batterie_mois, capacite_taxi, duree_fonctionnement_normal, t, auto=True, electrique=True),
-                  'rush_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi+prix_batterie_mois, capacite_taxi, duree_fonctionnement_rush, t, auto=True, electrique=True)}
+    trucs_a_plot_normal={'normal_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus ,entretien_bus, capacite_bus, duree_fonctionnement_normal, t),
+                        'normal_articule' : cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule, capacite_articule, duree_fonctionnement_normal, t),
+                        'normal_bus_auto' : cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto, capacite_bus_auto, duree_fonctionnement_normal, t, auto=True),
+                        'normal_taxi' : cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi+prix_batterie_mois, capacite_taxi, duree_fonctionnement_normal, t, auto=True, electrique=True)}
 
-    for truc in trucs_a_plot:
-        plt.plot(t,trucs_a_plot[truc])
+    trucs_a_plot_rush={'rush_bus' : cout_mois_capa(prix_bus, conso_bus, v_bus, entretien_bus, capacite_bus, duree_fonctionnement_rush, t),
+                       'rush_articule': cout_mois_capa(prix_articule, conso_articule, v_articule, entretien_articule,capacite_articule, duree_fonctionnement_rush, t),
+                       'rush_bus_auto': cout_mois_capa(prix_bus_auto, conso_bus_auto, v_bus_auto, entretien_bus_auto,capacite_bus_auto, duree_fonctionnement_rush, t, auto=True),
+                       'rush_taxi': cout_mois_capa(prix_taxi, conso_taxi, v_taxi, entretien_taxi + prix_batterie_mois,capacite_taxi, duree_fonctionnement_rush, t, auto=True,electrique=True)}
+    if normal:
+        for truc in trucs_a_plot_normal:
+            plt.plot(t,trucs_a_plot_normal[truc])
+        plt.legend([truc for truc in trucs_a_plot_normal])
 
-    plt.legend([truc for truc in trucs_a_plot])
+    if rush:
+        for truc in trucs_a_plot_rush:
+            plt.plot(t,trucs_a_plot_rush[truc])
+        plt.legend([truc for truc in trucs_a_plot_rush])
+    plt.grid()
+    plt.xlabel('durée d\'amortissement (mois)')
+    plt.ylabel('prix compensé (relatif)')
     plt.show()
