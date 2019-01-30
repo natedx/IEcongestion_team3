@@ -173,4 +173,4 @@ def test():
     cout = 100000
     table_v, table_p, moyenne, nb_bus, remplissage = simul(
         cout, flux, longueur, vitesse, nb_arret, t_arret, d_simul, 1, ligne9106)
-    print(table_v, table_p, moyenne, np.average(moyenne), nb_bus, remplissage sep='\n')
+    print("table des véhicules : ", table_v, "table des passagers : ", table_p, "table des temps d'attente : ", moyenne, "temps d'attente moyen : ", np.average(moyenne), "nombre de bus : " nb_bus, "table des remplissages : ", remplissage sep='\n')
